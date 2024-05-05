@@ -1,0 +1,6 @@
+name: OlympicsDataPersistency
+version: '${project.version}'
+main: me.zrunner.olympicsdatapersistency.Main
+api-version: '1.20'
+authors: [ Z_runner ]
+description: Manage data persistence between our Creative Olympics servers
