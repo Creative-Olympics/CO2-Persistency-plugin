@@ -16,15 +16,15 @@ public final class FirebaseClient {
 
     private final @Nonnull Firestore db;
 
-    public FirebaseClient(@Nonnull InputStream fileStream) throws IOException {
-        this.connect(fileStream);
+    public FirebaseClient(@Nonnull InputStream fileStream, @Nonnull String firebaseURL) throws IOException {
+        this.connect(fileStream, firebaseURL);
         this.db = FirestoreClient.getFirestore();
     }
 
-    private void connect(@Nonnull InputStream fileStream) throws IOException {
+    private void connect(@Nonnull InputStream fileStream, @Nonnull String firebaseURL) throws IOException {
         FirebaseOptions options = FirebaseOptions.builder()
                 .setCredentials(GoogleCredentials.fromStream(fileStream))
-                .setDatabaseUrl("https://rahneil-n3-co-default-rtdb.europe-west1.firebasedatabase.app")
+                .setDatabaseUrl(firebaseURL)
                 .build();
 
         FirebaseApp.initializeApp(options);

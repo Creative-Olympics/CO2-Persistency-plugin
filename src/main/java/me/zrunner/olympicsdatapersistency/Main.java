@@ -26,6 +26,9 @@ public final class Main extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        getConfig().options().copyDefaults();
+        saveDefaultConfig();
+
         File firebaseKeyFile = new File(getDataFolder(), "firebaseServiceAccountKey.json");
         if (!firebaseKeyFile.exists()) {
             setEnabled(false);
@@ -34,9 +37,13 @@ public final class Main extends JavaPlugin {
                             .formatted(getDataFolder().getAbsolutePath())
             );
         }
-        System.out.println(firebaseKeyFile.toURI());
+        String firebaseURL = getConfig().getString("firebaseURL");
+        if (firebaseURL == null || !firebaseURL.startsWith("https://")) {
+            setEnabled(false);
+            throw new RuntimeException("firebaseURL not set in config.yml");
+        }
         try {
-            this.fbClient = new FirebaseClient(new FileInputStream(firebaseKeyFile));
+            this.fbClient = new FirebaseClient(new FileInputStream(firebaseKeyFile), firebaseURL);
         } catch (Exception e) {
             e.printStackTrace();
         }
