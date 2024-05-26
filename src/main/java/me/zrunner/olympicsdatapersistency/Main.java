@@ -48,7 +48,7 @@ public final class Main extends JavaPlugin {
             e.printStackTrace();
         }
 
-        Bukkit.getPluginManager().registerEvents(new AdvancementListener(fbClient), this);
+        Bukkit.getPluginManager().registerEvents(new AdvancementListener(this, fbClient), this);
 
         CommandAPI.onEnable();
         new PersistencyCommand(fbClient).register();

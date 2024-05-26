@@ -1,1 +1,6 @@
 firebaseURL: ""
+syncedAdvancements:
+  - adventure/kill_a_mob
+  - story/mine_stone
+  - story/smelt_iron
+  - nether/root
