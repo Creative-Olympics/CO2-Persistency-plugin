@@ -2,6 +2,7 @@ package me.zrunner.olympicsdatapersistency;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class FirebaseUser {
@@ -19,9 +20,9 @@ public class FirebaseUser {
      */
     private String mcUUID;
     /**
-     * The amount of money the user has. Cannot be null.
+     * The scores of the user. Empty by default
      */
-    private long money;
+    private HashMap<String, Integer> scores;
     /**
      * The list of achievement IDs the user has. Empty by default
      */
@@ -31,7 +32,7 @@ public class FirebaseUser {
         this.displayName = "";
         this.minecraftName = null;
         this.mcUUID = null;
-        this.money = 0;
+        this.scores = new HashMap<>();
         this.achievements = new ArrayList<>();
     }
 
@@ -59,12 +60,12 @@ public class FirebaseUser {
         this.mcUUID = mcUUID;
     }
 
-    public long getMoney() {
-        return money;
+    public HashMap<String, Integer> getScores() {
+        return scores;
     }
 
-    public void setMoney(long money) {
-        this.money = money;
+    public void setScores(HashMap<String, Integer> scores) {
+        this.scores = scores;
     }
 
     public @Nonnull List<String> getAchievements() {

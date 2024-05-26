@@ -63,14 +63,14 @@ public final class FirebaseClient {
         }
     }
 
-    public void setUserMoney(@Nonnull String uuid, long newValue) throws ExecutionException, InterruptedException {
+    public void setUserScore(@Nonnull String uuid, @Nonnull String objectiveName, int scoreValue) throws ExecutionException, InterruptedException {
         QueryDocumentSnapshot doc = getUserDocumentSnapshotFromMinecraftUUID(uuid);
         if (doc == null) {
             System.out.println("No such document!");
             return;
         }
         DocumentReference docRef = doc.getReference();
-        docRef.update("money", newValue);
+        docRef.update("scores." + objectiveName, scoreValue);
     }
 
     public void addUserAdvancement(@Nonnull String uuid, String advancement) throws ExecutionException, InterruptedException {

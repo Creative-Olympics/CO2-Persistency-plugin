@@ -49,6 +49,7 @@ public final class Main extends JavaPlugin {
         }
 
         Bukkit.getPluginManager().registerEvents(new AdvancementListener(this, fbClient), this);
+        Bukkit.getPluginManager().registerEvents(new ScoreboardListener(this, fbClient), this);
 
         CommandAPI.onEnable();
         new PersistencyCommand(fbClient).register();

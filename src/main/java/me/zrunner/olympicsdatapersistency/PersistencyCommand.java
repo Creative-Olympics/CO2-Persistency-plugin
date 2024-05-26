@@ -71,12 +71,12 @@ public class PersistencyCommand {
         return """
                 User found: %s
                 Minecraft name: %s (%s)
-                Money: %d
+                Scores: %s
                 Achievements: %s""".formatted(
                 user.getDisplayName(),
                 user.getMinecraftName(),
                 user.getMcUUID(),
-                user.getMoney(),
+                user.getScores(),
                 user.getAchievements()
         );
     }

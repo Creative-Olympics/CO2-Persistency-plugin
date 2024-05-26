@@ -4,3 +4,5 @@ syncedAdvancements:
   - story/mine_stone
   - story/smelt_iron
   - nether/root
+syncedObjectives:
+  - money
