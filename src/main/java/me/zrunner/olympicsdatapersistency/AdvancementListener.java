@@ -23,6 +23,19 @@ public class AdvancementListener implements Listener {
         this.fbClient = fbClient;
     }
 
+    public Boolean isAdvancementSyncedFromCache(UUID playerUUID, String advancementKey) {
+        List<String> playerAdvancements = cachedAdvancements.get(playerUUID);
+        return playerAdvancements != null && playerAdvancements.contains(advancementKey);
+    }
+
+    public void setAdvancementSyncedToCache(UUID playerUUID, String advancementKey) {
+        cachedAdvancements.computeIfAbsent(playerUUID, k -> new ArrayList<>()).add(advancementKey);
+    }
+
+    public void setAdvancementsSyncedToCache(UUID playerUUID, List<String> advancements) {
+        cachedAdvancements.put(playerUUID, advancements);
+    }
+
     @EventHandler
     public void onAdvancementDone(PlayerAdvancementDoneEvent event) {
         // get the player who has completed the advancement
@@ -49,33 +62,18 @@ public class AdvancementListener implements Listener {
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
-        // get the player's UUID
-        String playerUUID = event.getPlayer().getUniqueId().toString();
-        // get the player's advancements
-        FirebaseUser user = fbClient.getUserFromMinecraftUUID(playerUUID);
+        UUID playerUUID = event.getPlayer().getUniqueId();
+        FirebaseUser user = fbClient.getUserFromMinecraftUUID(playerUUID.toString());
         if (user == null) {
             System.out.println("New player detected: " + event.getPlayer().getName());
             return;
         }
-        setAdvancementsSyncedToCache(event.getPlayer().getUniqueId(), user.getAdvancements());
+        setAdvancementsSyncedToCache(playerUUID, user.getAdvancements());
         user.syncAdvancementsToPlayer(event.getPlayer());
     }
 
     private List<String> getSyncedAdvancements() {
         return plugin.getConfig().getStringList("syncedAdvancements");
-    }
-
-    public Boolean isAdvancementSyncedFromCache(UUID playerUUID, String advancementKey) {
-        List<String> playerAdvancements = cachedAdvancements.get(playerUUID);
-        return playerAdvancements != null && playerAdvancements.contains(advancementKey);
-    }
-
-    public void setAdvancementSyncedToCache(UUID playerUUID, String advancementKey) {
-        cachedAdvancements.computeIfAbsent(playerUUID, k -> new ArrayList<>()).add(advancementKey);
-    }
-
-    public void setAdvancementsSyncedToCache(UUID playerUUID, List<String> advancements) {
-        cachedAdvancements.put(playerUUID, advancements);
     }
 
 }

@@ -4,6 +4,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.advancement.Advancement;
 import org.bukkit.entity.Player;
+import org.bukkit.scoreboard.Objective;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
@@ -97,6 +98,15 @@ public class FirebaseUser {
     }
 
     public void syncScoresToPlayer(Player player) {
+        for (String objectiveName : scores.keySet()) {
+            System.out.println("Syncing score: " + objectiveName + " for player " + player.getName());
+            Objective objective = player.getScoreboard().getObjective(objectiveName);
+            if (objective == null) {
+                System.out.println("Objective " + objectiveName + " not found.");
+                continue;
+            }
+            objective.getScore(player.getName()).setScore(scores.get(objectiveName));
+        }
     }
 
     public void syncAllToPlayer(Player player) {

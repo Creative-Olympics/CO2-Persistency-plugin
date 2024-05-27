@@ -5,6 +5,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.server.ServerCommandEvent;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Score;
@@ -23,6 +24,18 @@ public class ScoreboardListener implements Listener {
     public ScoreboardListener(Main plugin, FirebaseClient fbClient) {
         this.plugin = plugin;
         this.fbClient = fbClient;
+    }
+
+    public int getCachedScore(UUID playerUUID, String objectiveName) {
+        return cachedScores.getOrDefault(playerUUID, new HashMap<>()).getOrDefault(objectiveName, 0);
+    }
+
+    public void setCachedScore(UUID playerUUID, String objectiveName, int score) {
+        cachedScores.computeIfAbsent(playerUUID, k -> new HashMap<>()).put(objectiveName, score);
+    }
+
+    public void setCachedScores(UUID playerUUID, HashMap<String, Integer> scores) {
+        cachedScores.put(playerUUID, scores);
     }
 
     public void updatePlayerScores(Player player) {
@@ -69,11 +82,16 @@ public class ScoreboardListener implements Listener {
         }
     }
 
-    private int getCachedScore(UUID playerUUID, String objectiveName) {
-        return cachedScores.getOrDefault(playerUUID, new HashMap<>()).getOrDefault(objectiveName, 0);
+    @EventHandler
+    public void onPlayerJoin(PlayerJoinEvent event) {
+        UUID playerUUID = event.getPlayer().getUniqueId();
+        FirebaseUser user = fbClient.getUserFromMinecraftUUID(playerUUID.toString());
+        if (user == null) {
+            System.out.println("New player detected: " + event.getPlayer().getName());
+            return;
+        }
+        setCachedScores(playerUUID, user.getScores());
+        user.syncScoresToPlayer(event.getPlayer());
     }
 
-    private void setCachedScore(UUID playerUUID, String objectiveName, int score) {
-        cachedScores.computeIfAbsent(playerUUID, k -> new HashMap<>()).put(objectiveName, score);
-    }
 }
