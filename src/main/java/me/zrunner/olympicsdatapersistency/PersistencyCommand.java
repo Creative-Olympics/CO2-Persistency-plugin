@@ -15,14 +15,18 @@ public class PersistencyCommand {
 
     private final FirebaseClient fbClient;
 
-    public PersistencyCommand(FirebaseClient fbClient) {
+    private final AdvancementListener advancementListener;
+
+    public PersistencyCommand(FirebaseClient fbClient, AdvancementListener advancementListener) {
         this.fbClient = fbClient;
+        this.advancementListener = advancementListener;
     }
 
     public void register() {
         new CommandTree("persistency")
                 .then(userInfoSubcommand())
                 .then(playerInfoSubcommand())
+                .then(syncPlayerFromFirebaseSubcommand())
                 .register();
         System.out.println("Command /persistency registered.");
     }
@@ -62,6 +66,28 @@ public class PersistencyCommand {
                                 return 0;
                             }
                             sender.sendMessage(ChatColor.GREEN + describeUser(user));
+                            return 1;
+                        })
+                );
+    }
+
+    private Argument<String> syncPlayerFromFirebaseSubcommand() {
+        return new LiteralArgument("sync-player-from-firebase")
+                .then(new PlayerArgument("player")
+                        .executes((sender, args) -> {
+                            Player player = (Player) args.get("player");
+                            if (player == null) {
+                                sender.sendMessage(ChatColor.RED + "No player provided.");
+                                return 0;
+                            }
+                            FirebaseUser user = fbClient.getUserFromMinecraftUUID(player.getUniqueId().toString());
+                            if (user == null) {
+                                sender.sendMessage(ChatColor.RED + "No user found with the UUID " + player.getUniqueId() + ".");
+                                return 0;
+                            }
+                            advancementListener.setAdvancementsSyncedToCache(player.getUniqueId(), user.getAdvancements());
+                            user.syncAllToPlayer(player);
+                            sender.sendMessage(ChatColor.GREEN + "Synced user data to player " + player.getName() + ".");
                             return 1;
                         })
                 );

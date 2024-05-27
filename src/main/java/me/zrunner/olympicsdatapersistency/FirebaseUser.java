@@ -1,5 +1,10 @@
 package me.zrunner.olympicsdatapersistency;
 
+import org.bukkit.Bukkit;
+import org.bukkit.NamespacedKey;
+import org.bukkit.advancement.Advancement;
+import org.bukkit.entity.Player;
+
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -76,4 +81,26 @@ public class FirebaseUser {
         this.advancements = advancements;
     }
 
+
+    public void syncAdvancementsToPlayer(Player player) {
+        for (String advancementKey : advancements) {
+            System.out.println("Syncing advancement: " + advancementKey + " for player " + player.getName());
+            Advancement advancement = Bukkit.getAdvancement(NamespacedKey.minecraft(advancementKey));
+            if (advancement == null) {
+                System.out.println("Advancement " + advancementKey + " not found.");
+                continue;
+            }
+            for (String criteria : advancement.getCriteria()) {
+                player.getAdvancementProgress(advancement).awardCriteria(criteria);
+            }
+        }
+    }
+
+    public void syncScoresToPlayer(Player player) {
+    }
+
+    public void syncAllToPlayer(Player player) {
+        syncAdvancementsToPlayer(player);
+        syncScoresToPlayer(player);
+    }
 }

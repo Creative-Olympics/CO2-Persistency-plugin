@@ -48,11 +48,13 @@ public final class Main extends JavaPlugin {
             e.printStackTrace();
         }
 
-        Bukkit.getPluginManager().registerEvents(new AdvancementListener(this, fbClient), this);
-        Bukkit.getPluginManager().registerEvents(new ScoreboardListener(this, fbClient), this);
+        AdvancementListener advancementListener = new AdvancementListener(this, fbClient);
+        ScoreboardListener scoreboardListener = new ScoreboardListener(this, fbClient);
+        Bukkit.getPluginManager().registerEvents(advancementListener, this);
+        Bukkit.getPluginManager().registerEvents(scoreboardListener, this);
 
         CommandAPI.onEnable();
-        new PersistencyCommand(fbClient).register();
+        new PersistencyCommand(fbClient, advancementListener).register();
     }
 
     @Override
