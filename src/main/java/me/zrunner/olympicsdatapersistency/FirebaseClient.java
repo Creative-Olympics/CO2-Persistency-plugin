@@ -80,7 +80,7 @@ public final class FirebaseClient {
             return;
         }
         DocumentReference docRef = doc.getReference();
-        docRef.update("achievements", FieldValue.arrayUnion(advancement));
+        docRef.update("advancements", FieldValue.arrayUnion(advancement));
     }
 
 

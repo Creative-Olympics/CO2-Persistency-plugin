@@ -24,16 +24,16 @@ public class FirebaseUser {
      */
     private HashMap<String, Integer> scores;
     /**
-     * The list of achievement IDs the user has. Empty by default
+     * The list of advancements IDs the user has. Empty by default
      */
-    private @Nonnull List<String> achievements;
+    private @Nonnull List<String> advancements;
 
     public FirebaseUser() {
         this.displayName = "";
         this.minecraftName = null;
         this.mcUUID = null;
         this.scores = new HashMap<>();
-        this.achievements = new ArrayList<>();
+        this.advancements = new ArrayList<>();
     }
 
     public @Nonnull String getDisplayName() {
@@ -68,12 +68,12 @@ public class FirebaseUser {
         this.scores = scores;
     }
 
-    public @Nonnull List<String> getAchievements() {
-        return achievements;
+    public @Nonnull List<String> getAdvancements() {
+        return advancements;
     }
 
-    public void setAchievements(@Nonnull List<String> achievements) {
-        this.achievements = achievements;
+    public void setAdvancements(@Nonnull List<String> advancements) {
+        this.advancements = advancements;
     }
 
 }
