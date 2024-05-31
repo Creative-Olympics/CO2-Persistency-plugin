@@ -63,9 +63,14 @@ public class AdvancementListener implements Listener {
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
         UUID playerUUID = event.getPlayer().getUniqueId();
-        FirebaseUser user = fbClient.getUserFromMinecraftUUID(playerUUID.toString());
-        if (user == null) {
-            System.out.println("New player detected: " + event.getPlayer().getName());
+        FirebaseUser user = null;
+        try {
+            user = fbClient.getOrCreateUserFromMinecraftUUID(
+                    playerUUID.toString(),
+                    event.getPlayer().getName()
+            );
+        } catch (ExecutionException | InterruptedException e) {
+            System.out.println("Unable to get or create user for player with UUID " + playerUUID + ".");
             return;
         }
         setAdvancementsSyncedToCache(playerUUID, user.getAdvancements());

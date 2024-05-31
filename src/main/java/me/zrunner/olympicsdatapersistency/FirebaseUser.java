@@ -42,6 +42,13 @@ public class FirebaseUser {
         this.advancements = new ArrayList<>();
     }
 
+    public FirebaseUser(@Nonnull String mcUUID, @Nonnull String playerName) {
+        this();
+        this.mcUUID = mcUUID;
+        this.displayName = playerName;
+        this.minecraftName = playerName;
+    }
+
     public @Nonnull String getDisplayName() {
         return displayName;
     }

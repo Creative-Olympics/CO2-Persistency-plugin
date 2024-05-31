@@ -9,6 +9,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 import javax.annotation.Nonnull;
+import java.util.concurrent.ExecutionException;
 
 
 public class PersistencyCommand {
@@ -80,10 +81,18 @@ public class PersistencyCommand {
                                 sender.sendMessage(ChatColor.RED + "No player provided.");
                                 return 0;
                             }
-                            FirebaseUser user = fbClient.getUserFromMinecraftUUID(player.getUniqueId().toString());
-                            if (user == null) {
-                                sender.sendMessage(ChatColor.RED + "No user found with the UUID " + player.getUniqueId() + ".");
-                                return 0;
+                            FirebaseUser user = null;
+                            try {
+                                user = fbClient.getOrCreateUserFromMinecraftUUID(
+                                        player.getUniqueId().toString(),
+                                        player.getName()
+                                );
+                            } catch (ExecutionException | InterruptedException e) {
+                                sender.sendMessage(
+                                        ChatColor.RED + "Unable to get or create user for player with UUID "
+                                                + player.getUniqueId() + "."
+                                );
+                                return 1;
                             }
                             advancementListener.setAdvancementsSyncedToCache(player.getUniqueId(), user.getAdvancements());
                             user.syncAllToPlayer(player);

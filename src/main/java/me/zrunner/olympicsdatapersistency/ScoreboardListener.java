@@ -13,6 +13,7 @@ import org.bukkit.scoreboard.Scoreboard;
 
 import java.util.HashMap;
 import java.util.UUID;
+import java.util.concurrent.ExecutionException;
 
 public class ScoreboardListener implements Listener {
 
@@ -85,9 +86,14 @@ public class ScoreboardListener implements Listener {
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
         UUID playerUUID = event.getPlayer().getUniqueId();
-        FirebaseUser user = fbClient.getUserFromMinecraftUUID(playerUUID.toString());
-        if (user == null) {
-            System.out.println("New player detected: " + event.getPlayer().getName());
+        FirebaseUser user = null;
+        try {
+            user = fbClient.getOrCreateUserFromMinecraftUUID(
+                    playerUUID.toString(),
+                    event.getPlayer().getName()
+            );
+        } catch (ExecutionException | InterruptedException e) {
+            System.out.println("Unable to get or create user for player with UUID " + playerUUID + ".");
             return;
         }
         setCachedScores(playerUUID, user.getScores());

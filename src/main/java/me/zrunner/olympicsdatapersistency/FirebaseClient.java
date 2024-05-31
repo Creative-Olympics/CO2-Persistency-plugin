@@ -52,7 +52,7 @@ public final class FirebaseClient {
         try {
             QueryDocumentSnapshot doc = getUserDocumentSnapshotFromMinecraftUUID(uuid);
             if (doc == null) {
-                System.out.println("No such document!");
+                System.out.println("No user found with UUID " + uuid);
                 return null;
             } else {
                 return doc.toObject(FirebaseUser.class);
@@ -61,6 +61,22 @@ public final class FirebaseClient {
             e.printStackTrace();
             return null;
         }
+    }
+
+    public synchronized FirebaseUser createUserFromMinecraftUUID(@Nonnull String uuid, @Nonnull String playerName) throws ExecutionException, InterruptedException {
+        FirebaseUser user = new FirebaseUser(uuid, playerName);
+        // Add a new document with a generated ID and wait for it to be fetched
+        db.collection("users").add(user).get();
+        return user;
+    }
+
+    public synchronized FirebaseUser getOrCreateUserFromMinecraftUUID(@Nonnull String uuid, @Nonnull String playerName) throws ExecutionException, InterruptedException {
+        FirebaseUser user = getUserFromMinecraftUUID(uuid);
+        if (user == null) {
+            System.out.println("Creating new user with UUID " + uuid);
+            return createUserFromMinecraftUUID(uuid, playerName);
+        }
+        return user;
     }
 
     public void setUserScore(@Nonnull String uuid, @Nonnull String objectiveName, int scoreValue) throws ExecutionException, InterruptedException {
