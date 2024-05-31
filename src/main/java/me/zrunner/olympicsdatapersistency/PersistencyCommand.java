@@ -61,7 +61,13 @@ public class PersistencyCommand {
                                 sender.sendMessage(ChatColor.RED + "No player provided.");
                                 return 0;
                             }
-                            FirebaseUser user = fbClient.getUserFromMinecraftUUID(player.getUniqueId().toString());
+                            FirebaseUser user = null;
+                            try {
+                                user = fbClient.getUserFromMinecraftUUID(player.getUniqueId().toString());
+                            } catch (ExecutionException e) {
+                                sender.sendMessage(ChatColor.RED + "Timeout while fetching user data.");
+                                return 1;
+                            }
                             if (user == null) {
                                 sender.sendMessage(ChatColor.RED + "No user found with the UUID " + player.getUniqueId() + ".");
                                 return 0;
@@ -81,7 +87,7 @@ public class PersistencyCommand {
                                 sender.sendMessage(ChatColor.RED + "No player provided.");
                                 return 0;
                             }
-                            FirebaseUser user = null;
+                            FirebaseUser user;
                             try {
                                 user = fbClient.getOrCreateUserFromMinecraftUUID(
                                         player.getUniqueId().toString(),

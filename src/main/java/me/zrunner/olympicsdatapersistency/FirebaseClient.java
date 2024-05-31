@@ -48,7 +48,7 @@ public final class FirebaseClient {
         }
     }
 
-    public FirebaseUser getUserFromMinecraftUUID(@Nonnull String uuid) {
+    public FirebaseUser getUserFromMinecraftUUID(@Nonnull String uuid) throws ExecutionException {
         try {
             QueryDocumentSnapshot doc = getUserDocumentSnapshotFromMinecraftUUID(uuid);
             if (doc == null) {
@@ -65,7 +65,6 @@ public final class FirebaseClient {
 
     public synchronized FirebaseUser createUserFromMinecraftUUID(@Nonnull String uuid, @Nonnull String playerName) throws ExecutionException, InterruptedException {
         FirebaseUser user = new FirebaseUser(uuid, playerName);
-        // Add a new document with a generated ID and wait for it to be fetched
         db.collection("users").add(user).get();
         return user;
     }
