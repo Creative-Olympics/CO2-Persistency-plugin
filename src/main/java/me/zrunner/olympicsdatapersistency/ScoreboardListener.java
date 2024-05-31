@@ -54,10 +54,13 @@ public class ScoreboardListener implements Listener {
             }
             try {
                 fbClient.setUserScore(player.getUniqueId().toString(), objectiveName, scoreValue);
-                setCachedScore(player.getUniqueId(), objectiveName, scoreValue);
-            } catch (Exception e) {
+            } catch (ExecutionException | InterruptedException e) {
+                score.setScore(cachedScore);
+                System.err.println("Unable to sync score " + objectiveName + " for player " + player.getName());
                 e.printStackTrace();
+                return;
             }
+            setCachedScore(player.getUniqueId(), objectiveName, scoreValue);
         }
     }
 
@@ -86,7 +89,7 @@ public class ScoreboardListener implements Listener {
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
         UUID playerUUID = event.getPlayer().getUniqueId();
-        FirebaseUser user = null;
+        FirebaseUser user;
         try {
             user = fbClient.getOrCreateUserFromMinecraftUUID(
                     playerUUID.toString(),

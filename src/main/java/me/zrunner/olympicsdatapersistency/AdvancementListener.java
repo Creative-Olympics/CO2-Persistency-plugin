@@ -1,5 +1,7 @@
 package me.zrunner.olympicsdatapersistency;
 
+import org.bukkit.advancement.Advancement;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerAdvancementDoneEvent;
@@ -55,7 +57,10 @@ public class AdvancementListener implements Listener {
         try {
             fbClient.addUserAdvancement(event.getPlayer().getUniqueId().toString(), advancementKey);
         } catch (ExecutionException | InterruptedException e) {
-            throw new RuntimeException(e);
+            cancelEvent(event);
+            System.err.println("Unable to sync advancement: " + advancementKey + " for player " + playerName + ".");
+            e.printStackTrace();
+            return;
         }
         setAdvancementSyncedToCache(event.getPlayer().getUniqueId(), advancementKey);
     }
@@ -63,7 +68,7 @@ public class AdvancementListener implements Listener {
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
         UUID playerUUID = event.getPlayer().getUniqueId();
-        FirebaseUser user = null;
+        FirebaseUser user;
         try {
             user = fbClient.getOrCreateUserFromMinecraftUUID(
                     playerUUID.toString(),
@@ -79,6 +84,14 @@ public class AdvancementListener implements Listener {
 
     private List<String> getSyncedAdvancements() {
         return plugin.getConfig().getStringList("syncedAdvancements");
+    }
+
+    private void cancelEvent(PlayerAdvancementDoneEvent event) {
+        Player player = event.getPlayer();
+        Advancement advancement = event.getAdvancement();
+        for (String c : advancement.getCriteria()) {
+            player.getAdvancementProgress(advancement).revokeCriteria(c);
+        }
     }
 
 }
